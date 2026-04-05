@@ -1,1 +1,1223 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sehyun Lee — AI Researcher & Educator</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0e0e0e;
+    --paper: #f5f2ec;
+    --accent: #c8402a;
+    --muted: #8a8278;
+    --warm: #e8e3d8;
+    --line: rgba(14,14,14,0.12);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease;
+    mix-blend-mode: multiply;
+  }
+  .cursor-ring {
+    width: 32px; height: 32px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.5;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* Nav */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 4rem;
+    background: rgba(245, 242, 236, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .nav-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* Hero */
+  #hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    padding-top: 80px;
+  }
+
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 6rem 4rem 6rem 4rem;
+    position: relative;
+  }
+
+  .hero-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+
+  .hero-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(3.5rem, 7vw, 6rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+  }
+
+  .hero-name span {
+    display: block;
+    font-style: italic;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    color: var(--accent);
+  }
+
+  .hero-bio {
+    font-size: 1.2rem;
+    line-height: 1.75;
+    color: #3a3630;
+    max-width: 480px;
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.6s forwards;
+  }
+
+  .hero-bio em {
+    font-style: italic;
+    color: var(--ink);
+    font-weight: 400;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.8s forwards;
+  }
+
+  .btn-primary {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 1rem 2rem;
+    border: 1px solid var(--ink);
+    transition: all 0.3s;
+    display: inline-block;
+  }
+  .btn-primary:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .btn-secondary {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    background: transparent;
+    color: var(--ink);
+    padding: 1rem 2rem;
+    border: 1px solid var(--ink);
+    transition: all 0.3s;
+    display: inline-block;
+  }
+  .btn-secondary:hover {
+    background: var(--warm);
+  }
+
+  .hero-right {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .hero-visual {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: var(--warm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* Geometric abstract portrait */
+  .portrait-abstract {
+    position: relative;
+    width: 320px;
+    height: 420px;
+  }
+
+  .portrait-rect {
+    position: absolute;
+    background: var(--ink);
+    opacity: 0;
+    animation: fadeIn 1s ease forwards;
+  }
+
+  .r1 { width: 200px; height: 300px; top: 60px; left: 60px; animation-delay: 0.5s; }
+  .r2 { width: 120px; height: 180px; top: 0; right: 20px; background: var(--accent); animation-delay: 0.7s; }
+  .r3 { width: 80px; height: 80px; bottom: 20px; left: 20px; background: var(--accent); animation-delay: 0.9s; }
+
+  .portrait-text {
+    position: absolute;
+    bottom: -30px;
+    right: -40px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 5rem;
+    color: var(--line);
+    letter-spacing: -0.05em;
+    white-space: nowrap;
+    opacity: 0;
+    animation: fadeIn 1s ease 1s forwards;
+    user-select: none;
+  }
+
+  .hero-stats {
+    position: absolute;
+    bottom: 3rem;
+    right: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 1.2s forwards;
+  }
+
+  .stat {
+    text-align: right;
+  }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 2.2rem;
+    line-height: 1;
+    color: var(--ink);
+  }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Marquee */
+  .marquee-wrap {
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+    padding: 1rem 0;
+    background: var(--ink);
+  }
+
+  .marquee-track {
+    display: flex;
+    gap: 0;
+    animation: marquee 20s linear infinite;
+    white-space: nowrap;
+  }
+
+  .marquee-item {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--paper);
+    padding: 0 2.5rem;
+    opacity: 0.7;
+  }
+
+  .marquee-item.accent { color: var(--accent); opacity: 1; }
+
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* Sections */
+  section {
+    padding: 7rem 4rem;
+    position: relative;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 4rem;
+  }
+
+  .section-title em {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  /* About */
+  #about {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: start;
+  }
+
+  .about-quote {
+    font-size: 2rem;
+    line-height: 1.4;
+    font-style: italic;
+    font-weight: 300;
+    color: var(--ink);
+    border-left: 3px solid var(--accent);
+    padding-left: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .about-body p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #3a3630;
+    margin-bottom: 1.5rem;
+  }
+
+  .about-body strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .about-right {}
+
+  .keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 3rem;
+  }
+
+  .keyword {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid var(--line);
+    padding: 0.5rem 1rem;
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+  .keyword:hover { border-color: var(--accent); color: var(--accent); }
+
+  .open-to {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .open-to::before {
+    content: 'OPEN';
+    position: absolute;
+    top: -1rem;
+    right: -0.5rem;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 4rem;
+    opacity: 0.07;
+    letter-spacing: -0.05em;
+    line-height: 1;
+  }
+
+  .open-to-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+
+  .open-to-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .open-to-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .open-to-list li {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: rgba(245,242,236,0.7);
+    padding-left: 1rem;
+    position: relative;
+  }
+  .open-to-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  /* Experience */
+  #experience {
+    background: var(--warm);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .exp-grid {
+    display: grid;
+    gap: 0;
+  }
+
+  .exp-item {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    border-top: 1px solid var(--line);
+    padding: 2.5rem 0;
+    transition: background 0.2s;
+    gap: 3rem;
+    align-items: start;
+  }
+  .exp-item:hover { background: rgba(200,64,42,0.03); }
+  .exp-item:last-child { border-bottom: 1px solid var(--line); }
+
+  .exp-period {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    padding-top: 0.25rem;
+  }
+
+  .exp-role {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .exp-org {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+
+  .exp-desc {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #4a453e;
+  }
+
+  .exp-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .exp-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1px solid var(--line);
+    padding: 0.25rem 0.6rem;
+    color: var(--muted);
+  }
+
+  /* Research */
+  #research {
+    background: var(--paper);
+  }
+
+  .research-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+
+  .research-card {
+    background: var(--paper);
+    padding: 2.5rem;
+    transition: background 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .research-card:hover { background: var(--warm); }
+
+  .research-card::before {
+    content: attr(data-year);
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+
+  .research-venue {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+
+  .research-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    line-height: 1.45;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .research-abstract {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: #5a534a;
+  }
+
+  .research-award {
+    display: inline-block;
+    margin-top: 1rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: var(--accent);
+    color: white;
+    padding: 0.3rem 0.7rem;
+  }
+
+  /* Education + Talks */
+  #education {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+  }
+
+  .edu-item {
+    border-top: 1px solid var(--line);
+    padding-top: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .edu-degree {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .edu-school {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
+  .edu-period {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .edu-note {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #5a534a;
+  }
+
+  /* Clients */
+  #clients {
+    background: var(--ink);
+    color: var(--paper);
+    text-align: center;
+  }
+
+  #clients .section-title { color: var(--paper); }
+
+  .clients-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.08);
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .client-cell {
+    background: var(--ink);
+    padding: 2rem;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    color: rgba(245,242,236,0.5);
+    transition: all 0.3s;
+  }
+  .client-cell:hover { background: var(--accent); color: var(--paper); }
+
+  /* Contact */
+  #contact {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: start;
+  }
+
+  .contact-email {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    color: var(--ink);
+    text-decoration: none;
+    display: block;
+    margin-bottom: 2rem;
+    transition: color 0.2s;
+    word-break: break-all;
+  }
+  .contact-email:hover { color: var(--accent); }
+
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    padding: 1rem 1.5rem;
+    border: 1px solid var(--line);
+    transition: all 0.2s;
+  }
+  .contact-link:hover { border-color: var(--accent); color: var(--accent); }
+
+  .contact-link span { opacity: 0.4; font-size: 0.6rem; }
+
+  .contact-right p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #3a3630;
+    margin-bottom: 1.5rem;
+  }
+
+  .availability {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    margin-bottom: 2rem;
+  }
+
+  .availability-dot {
+    width: 8px; height: 8px;
+    background: #22c55e;
+    border-radius: 50%;
+    animation: pulse-green 2s infinite;
+  }
+
+  @keyframes pulse-green {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+    50% { opacity: 0.8; box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 2rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .footer-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Scroll reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+
+  /* Divider */
+  .rule {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 0;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    nav { padding: 1.2rem 2rem; }
+    #hero { grid-template-columns: 1fr; }
+    .hero-right { height: 50vh; }
+    .hero-left { padding: 5rem 2rem 3rem; }
+    section { padding: 5rem 2rem; }
+    #about, #education, #contact { grid-template-columns: 1fr; gap: 3rem; }
+    .research-grid { grid-template-columns: 1fr; }
+    .clients-grid { grid-template-columns: repeat(2, 1fr); }
+    .exp-item { grid-template-columns: 1fr; gap: 0.5rem; }
+    footer { flex-direction: column; gap: 0.5rem; text-align: center; padding: 1.5rem 2rem; }
+    .nav-links { gap: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-name" href="#">Sehyun Lee</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-left">
+    <p class="hero-tag">AI Researcher · HCI · Educator</p>
+    <h1 class="hero-name">
+      Sehyun<br>
+      <span>Lee</span>
+    </h1>
+    <p class="hero-bio">
+      I study <em>how people talk to AI</em>—and why it matters.<br>
+      Bridging HCI research, AI engineering, and enterprise education to design intelligence that understands <em>human relationships</em>, not just queries.
+    </p>
+    <div class="hero-cta">
+      <a class="btn-primary" href="#research">View Research</a>
+      <a class="btn-secondary" href="#contact">Get in Touch</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-visual">
+      <div class="portrait-abstract">
+        <div class="portrait-rect r1"></div>
+        <div class="portrait-rect r2"></div>
+        <div class="portrait-rect r3"></div>
+        <div class="portrait-text">SL</div>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-num">4+</div>
+          <div class="stat-label">Publications</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">10+</div>
+          <div class="stat-label">Enterprise Clients</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">3yr</div>
+          <div class="stat-label">AI Education</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item accent">ACM CHI 2026</span>
+    <span class="marquee-item">·</span>
+    <span class="marquee-item">Samsung Electronics</span>
+    <span class="marquee-item">·</span>
+    <span class="marquee-item">SK Hynix</span>
+    <span class="marquee-item">·</span>
+    <span class="marquee-item accent">HCI Korea 2026</span>
+    <span class="marquee-item">·</span>
+    <span class="marquee-item">Hyundai Motor Group</span>
+    <span class="marquee-item">·</span>
+    <span class="marquee-item">University of Sussex</span>
+    <span class="marquee-item">·</span>
+    <span class="marquee-item accent">Hanyang University MOT</span>
+    <span class="marquee-item">·</span>
+    <span class="marquee-item">LG Electronics</span>
+    <span class="marquee-item">·</span>
+    <span class="marquee-item">RAG · GenAI · HCI</span>
+    <span class="marquee-item">·</span>
+    <!-- duplicate for seamless loop -->
+    <span class="marquee-item accent">ACM CHI 2026</span>
+    <span class="marquee-item">·</span>
+    <span class="marquee-item">Samsung Electronics</span>
+    <span class="marquee-item">·</span>
+    <span class="marquee-item">SK Hynix</span>
+    <span class="marquee-item">·</span>
+    <span class="marquee-item accent">HCI Korea 2026</span>
+    <span class="marquee-item">·</span>
+    <span class="marquee-item">Hyundai Motor Group</span>
+    <span class="marquee-item">·</span>
+    <span class="marquee-item">University of Sussex</span>
+    <span class="marquee-item">·</span>
+    <span class="marquee-item accent">Hanyang University MOT</span>
+    <span class="marquee-item">·</span>
+    <span class="marquee-item">LG Electronics</span>
+    <span class="marquee-item">·</span>
+    <span class="marquee-item">RAG · GenAI · HCI</span>
+    <span class="marquee-item">·</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-left">
+    <p class="section-label reveal">// About</p>
+    <h2 class="section-title reveal reveal-delay-1">How do people<br><em>speak</em> to AI?</h2>
+    <blockquote class="about-quote reveal reveal-delay-2">
+      "Don't work on the surface. Say 'Why'."
+    </blockquote>
+    <div class="about-body reveal reveal-delay-3">
+      <p>I started with a question: when someone picks up their phone and types a prompt into an AI, what are they really doing? What emotions, relationships, and social cues are embedded in those words?</p>
+      <p>My research lives at the intersection of <strong>AI engineering</strong> and <strong>Human-Computer Interaction</strong>. I study how emotional and relational context shapes the way people formulate AI queries—and what that means for next-generation agent design.</p>
+      <p>Currently pursuing an <strong>MS in Management of Technology</strong> at Hanyang University's Graduate School of Technology (MOT), where I published at <strong>ACM CHI SRC 2026</strong>.</p>
+    </div>
+  </div>
+  <div class="about-right reveal">
+    <div class="keywords">
+      <span class="keyword">HCI</span>
+      <span class="keyword">RAG</span>
+      <span class="keyword">GenAI</span>
+      <span class="keyword">Construal Level Theory</span>
+      <span class="keyword">Machine Learning</span>
+      <span class="keyword">UX Research</span>
+      <span class="keyword">Prompt Engineering</span>
+      <span class="keyword">AI Agents</span>
+      <span class="keyword">DX / AX Strategy</span>
+      <span class="keyword">PostgreSQL</span>
+    </div>
+    <div class="open-to">
+      <p class="open-to-label">Currently Open To</p>
+      <p class="open-to-title">Collaboration & Opportunities</p>
+      <ul class="open-to-list">
+        <li>PhD Programs in HCI / AI / CSCW</li>
+        <li>Visiting Research Positions (overseas)</li>
+        <li>Research Collaboration in AI × HCI</li>
+        <li>AI Engineering / Product Roles</li>
+        <li>International Conference Presentations</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- RESEARCH -->
+<section id="research">
+  <p class="section-label reveal">// Research</p>
+  <h2 class="section-title reveal reveal-delay-1">Published <em>Work</em></h2>
+  <div class="research-grid reveal reveal-delay-2">
+
+    <div class="research-card" data-year="2026">
+      <p class="research-venue">ACM CHI SRC 2026 · Accepted</p>
+      <h3 class="research-title">Meaning over Quantity: How Relationship Intimacy Shapes Giver Query Formulation in LLM-based Gift Recommendation</h3>
+      <p class="research-abstract">Drawing on Construal Level Theory, we demonstrated that givers in close relationships produce contextually rich, emotionally loaded prompts, while distant-relationship givers construct sparse, norm-centered queries—with design implications for Relational Adaptive UX.</p>
+      <a href="https://programs.sigchi.org/chi/2026/program/content/229498" target="_blank" style="display:inline-block;margin-top:1rem;font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);text-decoration:none;">View Paper →</a>
+    </div>
+
+    <div class="research-card" data-year="2026">
+      <p class="research-venue">HCI Korea 2026 · Oral Presentation</p>
+      <h3 class="research-title">Explaining Intent: How LLM Explanation Style Shapes Giver Perception in Gift Recommendation</h3>
+      <p class="research-abstract">Compared three LLM explanation modes (intent-based, profile-based, feature-based) across givers' product-situation fit perception and preference. Intent-centered explanations outperformed on relational congruence; feature-based excelled on comprehension depth.</p>
+    </div>
+
+    <div class="research-card" data-year="2025">
+      <p class="research-venue">Korean Ergonomics Society 2025 · Student Paper Award</p>
+      <h3 class="research-title">Cognitive Load vs. Comprehension: GPT-based Mobile Gift Recommendation Explanations</h3>
+      <p class="research-abstract">Exploratory study examining how gift-intention-based AI explanations minimized information overload while feature-focused explanations maximized product comprehension—revealing an efficiency–effectiveness trade-off for adaptive interface design.</p>
+      <span class="research-award">🏅 장려상 (Encouragement Award)</span>
+    </div>
+
+    <div class="research-card" data-year="2025">
+      <p class="research-venue">KTEM 2025 · Hanyang MOT Special Session</p>
+      <h3 class="research-title">Beyond DX: Toward AI-nization — An Evidence-based Analysis of Generative AI Adoption Effects</h3>
+      <p class="research-abstract">A case-based integrated analysis examining the conditions under which organizations transition from digital transformation to genuine AI-nization, with strategic implications for enterprise AI deployment.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <p class="section-label reveal">// Experience</p>
+  <h2 class="section-title reveal reveal-delay-1"><em>What</em> I've Built</h2>
+  <div class="exp-grid">
+
+    <div class="exp-item reveal">
+      <div class="exp-period">Aug 2022 — Present</div>
+      <div>
+        <p class="exp-role">Senior AI Researcher & Educator</p>
+        <p class="exp-org">COBSLAB</p>
+        <p class="exp-desc">Designed and delivered practical AI/DX curricula for Korea's largest enterprises—covering RAG pipelines, GenAI applications, machine learning, and data visualization. Led the KT G-level RAG + AI Agent project and co-authored the KT AICE Basic textbook.</p>
+        <div class="exp-tags">
+          <span class="exp-tag">RAG</span><span class="exp-tag">GenAI</span><span class="exp-tag">ML</span><span class="exp-tag">Curriculum Design</span><span class="exp-tag">Enterprise Training</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="exp-item reveal">
+      <div class="exp-period">2026 — Present</div>
+      <div>
+        <p class="exp-role">AI Ambassador</p>
+        <p class="exp-org">전국민 AI 경진대회 (National AI Competition)</p>
+        <p class="exp-desc">Appointed as national public ambassador for Korea's premier AI competition, promoting AI literacy and participation across the country.</p>
+        <div class="exp-tags">
+          <span class="exp-tag">AI Advocacy</span><span class="exp-tag">Public Outreach</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="exp-item reveal">
+      <div class="exp-period">Sep 2025</div>
+      <div>
+        <p class="exp-role">Visiting Researcher</p>
+        <p class="exp-org">University of Sussex — SPRU</p>
+        <p class="exp-desc">Participated in the Global Innovation Leadership program at the Science Policy Research Unit (SPRU), University of Sussex Business School. Focused on Science, Technology, and Innovation — Advanced Policy and Management.</p>
+        <div class="exp-tags">
+          <span class="exp-tag">STI Policy</span><span class="exp-tag">Innovation Management</span><span class="exp-tag">Overseas Research</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="exp-item reveal">
+      <div class="exp-period">Ongoing</div>
+      <div>
+        <p class="exp-role">Teaching Assistant (TA)</p>
+        <p class="exp-org">Hanyang University MOT</p>
+        <p class="exp-desc">TA for multiple graduate courses: AI+X (Prof. Ho-Kyung Ryu), AI-Driven NPD Process for HD Hyundai (Prof. Jieun Han), and Data Visualization with Tableau (Prof. Jieun Han).</p>
+        <div class="exp-tags">
+          <span class="exp-tag">AI+X</span><span class="exp-tag">Tableau</span><span class="exp-tag">NPD Process</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CLIENTS -->
+<section id="clients">
+  <p class="section-label" style="color:rgba(245,242,236,0.4); margin-bottom:0.75rem;">// Enterprise Clients</p>
+  <h2 class="section-title" style="margin-bottom:3rem;">Trusted by <em style="color:var(--accent);">Industry Leaders</em></h2>
+  <div class="clients-grid reveal">
+    <div class="client-cell">Samsung Electronics</div>
+    <div class="client-cell">SK Hynix</div>
+    <div class="client-cell">Hyundai Motor Group</div>
+    <div class="client-cell">LG Electronics</div>
+    <div class="client-cell">LG Innotek</div>
+    <div class="client-cell">LG H&H</div>
+    <div class="client-cell">CLIO</div>
+    <div class="client-cell">HMM</div>
+    <div class="client-cell">KT</div>
+    <div class="client-cell">KETI</div>
+    <div class="client-cell">Seoul CGEF</div>
+    <div class="client-cell">Seoul EDU</div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div>
+    <p class="section-label reveal">// Education</p>
+    <h2 class="section-title reveal reveal-delay-1"><em>Academic</em><br>Foundation</h2>
+
+    <div class="edu-item reveal reveal-delay-2">
+      <p class="edu-degree">M.S. — Management of Technology</p>
+      <p class="edu-school">Hanyang University Graduate School of Technology (MOT)</p>
+      <p class="edu-period">Feb 2025 — Mar 2027 (Expected)</p>
+      <p class="edu-note">Research focus: AI × HCI. Published at ACM CHI SRC 2026. TA for graduate AI courses. Participant in Global Innovation Leadership overseas program at University of Sussex.</p>
+    </div>
+
+    <div class="edu-item reveal reveal-delay-3">
+      <p class="edu-degree">Visiting Research</p>
+      <p class="edu-school">University of Sussex Business School — SPRU</p>
+      <p class="edu-period">September 2025</p>
+      <p class="edu-note">Engaged with cutting-edge STI (Science, Technology & Innovation) policy research in the UK. Broadening international academic network for future PhD and collaborative opportunities.</p>
+    </div>
+  </div>
+
+  <div>
+    <p class="section-label reveal">// Certifications</p>
+    <h2 class="section-title reveal reveal-delay-1"><em>Credentials</em><br>& Awards</h2>
+
+    <div class="edu-item reveal reveal-delay-2">
+      <p class="edu-degree">ADSP — Advanced Data Analytics Semi-Professional</p>
+      <p class="edu-school">Korea Data Industry Promotion Agency</p>
+      <p class="edu-period">November 2025</p>
+    </div>
+
+    <div class="edu-item reveal reveal-delay-2">
+      <p class="edu-degree">Adding Knowledge to LLMs</p>
+      <p class="edu-school">NVIDIA Deep Learning Institute</p>
+      <p class="edu-period">October 2025 · ID: Bg2Zpz1-QYm4_oz7rheibw</p>
+    </div>
+
+    <div class="edu-item reveal reveal-delay-3">
+      <p class="edu-degree">🏅 Korean Ergonomics Society — Student Paper Award</p>
+      <p class="edu-school">2025 Fall Conference — Encouragement Award</p>
+      <p class="edu-period">November 2025</p>
+    </div>
+
+    <div class="edu-item reveal reveal-delay-3">
+      <p class="edu-degree">🏆 KIHASA D-MoneyCare Competition</p>
+      <p class="edu-school">Korea Institute for Health and Social Affairs — Director's Award</p>
+      <p class="edu-period">July 2025 · Fullstack AI anomaly-detection system for dementia financial protection</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" style="background:var(--warm); border-top:1px solid var(--line);">
+  <div>
+    <p class="section-label reveal">// Contact</p>
+    <h2 class="section-title reveal reveal-delay-1">Let's<br><em>Connect</em></h2>
+
+    <div class="availability reveal reveal-delay-2">
+      <span class="availability-dot"></span>
+      Open to Research & Opportunities
+    </div>
+
+    <div class="contact-links reveal reveal-delay-3">
+      <a class="contact-link" href="mailto:tpgus343@hanyang.ac.kr">
+        <span>✉</span> tpgus343@hanyang.ac.kr
+      </a>
+      <a class="contact-link" href="https://www.linkedin.com/in/sehyun-lee-b35aa8241" target="_blank">
+        <span>↗</span> LinkedIn — Sehyun Lee
+      </a>
+      <a class="contact-link" href="https://github.com/sehyunhy" target="_blank">
+        <span>↗</span> GitHub — @sehyunhy
+      </a>
+      <a class="contact-link" href="https://programs.sigchi.org/chi/2026/program/content/229498" target="_blank">
+        <span>↗</span> ACM CHI 2026 Paper
+      </a>
+    </div>
+  </div>
+
+  <div class="contact-right reveal">
+    <p>I'm actively exploring <strong>PhD programs</strong> and <strong>visiting research positions</strong> in HCI, CSCW, and AI—particularly in North America, Europe, and East Asia.</p>
+    <p>If you work in AI × human behavior research, or you're building products where <em>relationships matter</em> as much as algorithms, I'd love to hear from you.</p>
+    <p>Also happy to connect on enterprise AI education, curriculum design, or co-authorship opportunities.</p>
+
+    <div style="margin-top:2rem; padding:1.5rem; border:1px solid var(--line); background:var(--paper);">
+      <p class="section-label" style="margin-bottom:0.5rem;">Languages</p>
+      <p style="font-family:'DM Mono',monospace; font-size:0.75rem; line-height:2; color:var(--ink);">
+        🇰🇷 Korean — Native<br>
+        🇺🇸 English — Advanced (Near-Native)<br>
+        🇯🇵 Japanese — Elementary
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-name">Sehyun Lee</span>
+  <span class="footer-note">AI Researcher · HCI · Seoul, Korea · 2026</span>
+  <span class="footer-note" style="font-family:'DM Mono',monospace; font-size:0.6rem;">sehyunhy.github.io</span>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.transform = `translate(${mx - 4}px, ${my - 4}px)`;
+  });
+  function animRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.transform = `translate(${rx - 16}px, ${ry - 16}px)`;
+    requestAnimationFrame(animRing);
+  }
+  animRing();
+
+  // Scroll reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
